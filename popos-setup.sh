@@ -56,7 +56,7 @@ FLATPAKS=(
     org.localsend.localsend_app
     io.github.getnf.embellish
     com.valvesoftware.Steam
-    com.vscodium.codium
+    com.visualstudio.code
 )
 
 # -----------------------------
