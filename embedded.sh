@@ -99,3 +99,36 @@ for app in "${FLATPAKS[@]}"; do
         flatpak install -y --noninteractive flathub "$app"
     fi
 done
+
+# -----------------------------
+# Install extensions for VSCode
+# -----------------------------
+
+if ! dpkg -s code >/dev/null 2>&1; then
+    printf 'VSCode is NOT installed. Skipping extension installation...\n'
+else
+
+    # Install STM32 extension for VSCode
+    if code --list-extensions | grep "STMicroelectronics.stm32-vscode-extension"; then
+        printf 'VSCode STM32 extension is already installed.\n'
+    else
+        log "Installing VSCode STM32 extension"
+        code --install-extension STMicroelectronics.stm32-vscode-extension
+    fi
+
+    # Install MCUXpresso extension for VSCode
+    if code --list-extensions | grep "NXPSemiconductors.mcuxpresso"; then
+        printf 'VSCode MCUXpresso extension is already installed.\n'
+    else
+        log "Installing VSCode MCUXpresso extension"
+        code --install-extension NXPSemiconductors.mcuxpresso
+    fi
+
+    # Install PlatformIO extension for VSCode
+    if code --list-extensions | grep "platformio.platformio-ide"; then
+        printf 'VSCode PlatformIO extension is already installed.\n'
+    else
+        log "Installing VSCode PlatformIO extension"
+        code --install-extension platformio.platformio-ide
+    fi
+fi
