@@ -43,6 +43,9 @@ APT_PACKAGES=(
 
     # System
     ufw
+
+    # IDE
+    code
 )
 
 FLATPAKS=(
@@ -56,7 +59,6 @@ FLATPAKS=(
     org.localsend.localsend_app
     io.github.getnf.embellish
     com.valvesoftware.Steam
-    com.visualstudio.code
 )
 
 # -----------------------------
