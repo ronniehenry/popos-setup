@@ -69,12 +69,14 @@ trap cleanup EXIT
 # Serial device access
 # -----------------------------
 
-if id -nG "$USER" | tr ' ' '\n' | grep -qx 'dialout'; then
-    printf 'User %s is already a member of dialout.\n' "$USER"
-else
+if ! id -nG "$USER" | tr ' ' '\n' | grep -qx 'dialout'; then
     log "Adding $USER to the dialout group"
     sudo usermod -aG dialout "$USER"
-    warn "Log out and back in (or reboot) for dialout membership to take effect."
+fi
+
+if ! id -nG "$USER" | tr ' ' '\n' | grep -qx 'plugdev'; then
+    log "Adding $USER to the plugdev group"
+    sudo usermod -aG plugdev "$USER"
 fi
 
 # -----------------------------
@@ -107,23 +109,6 @@ done
 if ! dpkg -s code >/dev/null 2>&1; then
     printf 'VSCode is NOT installed. Skipping extension installation...\n'
 else
-
-    # Install STM32 extension for VSCode
-    if code --list-extensions | grep "STMicroelectronics.stm32-vscode-extension"; then
-        printf 'VSCode STM32 extension is already installed.\n'
-    else
-        log "Installing VSCode STM32 extension"
-        code --install-extension STMicroelectronics.stm32-vscode-extension
-    fi
-
-    # Install MCUXpresso extension for VSCode
-    if code --list-extensions | grep "NXPSemiconductors.mcuxpresso"; then
-        printf 'VSCode MCUXpresso extension is already installed.\n'
-    else
-        log "Installing VSCode MCUXpresso extension"
-        code --install-extension NXPSemiconductors.mcuxpresso
-    fi
-
     # Install PlatformIO extension for VSCode
     if code --list-extensions | grep "platformio.platformio-ide"; then
         printf 'VSCode PlatformIO extension is already installed.\n'
@@ -132,3 +117,25 @@ else
         code --install-extension platformio.platformio-ide
     fi
 fi
+
+# -----------------------------
+# Finish
+# -----------------------------
+
+cat <<'EOF'
+
+============================================================
+Embedded development setup complete
+============================================================
+
+TODO:
+
+1. Verify the added groups to the user
+
+2. Verify the apps installed
+
+3. Check if the extensions are present in VSCode
+
+============================================================
+EOF
+
