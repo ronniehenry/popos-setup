@@ -6,12 +6,6 @@ set -Eeuo pipefail
 # Pop!_OS initial setup
 # ============================================================
 
-# -----------------------------
-# Configuration
-# -----------------------------
-
-BATTERY_LIMIT=80
-
 APT_PACKAGES=(
     # C/C++ development
     build-essential
@@ -163,60 +157,6 @@ log "Configuring libdvdcss"
 sudo dpkg-reconfigure -f noninteractive libdvd-pkg
 
 # -----------------------------
-# ASUS hardware support
-# -----------------------------
-
-log "Installing asusctl"
-
-if ! command -v brew >/dev/null 2>&1; then
-    /bin/bash -c \
-        "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-if [[ -x "$HOME/.linuxbrew/bin/brew" ]]; then
-    eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
-elif [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-    eval "$("/home/linuxbrew/.linuxbrew/bin/brew" shellenv)"
-elif command -v brew >/dev/null 2>&1; then
-    eval "$(brew shellenv)"
-else
-    die "Homebrew installation completed but brew could not be found."
-fi
-
-if ! brew tap | grep -qx 'ubblue-os/homebrew-tap'; then
-    brew tap ublue-os/homebrew-tap
-fi
-
-if ! brew list --cask 2>/dev/null | grep -qx 'asusctl-linux'; then
-    brew trust --cask ublue-os/tap/asusctl-linux
-    brew install --cask asusctl-linux
-fi
-
-# -----------------------------
-# ASUS services
-# -----------------------------
-
-log "Enabling ASUS services"
-
-sudo systemctl enable --now \
-    asusd.service \
-    asus-shutdown.service
-
-systemctl --user daemon-reload
-systemctl --user enable --now asusd-user.service
-
-sudo udevadm control --reload
-sudo udevadm trigger
-
-# -----------------------------
-# ASUS battery charge limit
-# -----------------------------
-
-log "Setting battery charge limit to ${BATTERY_LIMIT}%"
-
-asusctl battery limit "$BATTERY_LIMIT"
-
-# -----------------------------
 # Flatpak
 # -----------------------------
 
@@ -278,6 +218,30 @@ else
 fi
 
 # -----------------------------
+# Install extensions for VSCode
+# -----------------------------
+
+if ! dpkg -s code >/dev/null 2>&1; then
+    printf 'VSCode is NOT installed. Skipping extension installation...\n'
+else
+    # Install Python extension for VSCode
+    if code --list-extensions | grep "ms-python.python"; then
+        printf 'VSCode Python extension is already installed.\n'
+    else
+        log "Installing VSCode Python extension"
+        code --install-extension ms-python.python
+    fi
+    
+    # Install C/C++ extension for VSCode
+    if code --list-extensions | grep "ms-vscode.cpptools-extension-pack"; then
+        printf 'VSCode C/C++ extension is already installed.\n'
+    else
+        log "Installing VSCode C/C++ extension"
+        code --install-extension ms-vscode.cpptools-extension-pack
+    fi
+fi
+
+# -----------------------------
 # Finish
 # -----------------------------
 
@@ -298,10 +262,7 @@ TODO:
 
 3. Reboot the computer.
 
-4. Verify the ASUS battery limit:
-       asusctl battery info
-
-5. Open a new terminal session to start using Zsh.
+4. Open a new terminal session to start using Zsh.
 
 ============================================================
 EOF
