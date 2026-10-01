@@ -52,7 +52,6 @@ FLATPAKS=(
     org.strawberrymusicplayer.strawberry
     org.localsend.localsend_app
     io.github.getnf.embellish
-    com.valvesoftware.Steam
 )
 
 # -----------------------------

@@ -26,8 +26,6 @@ Things that are intentionally outside the scope of the setup scripts include:
 
 * Personal files
 * User-specific documents
-* Game installations
-* Steam libraries
 * Projects and source code
 * Application data that changes frequently
 * Credentials, passwords, SSH private keys, API keys, and other secrets
